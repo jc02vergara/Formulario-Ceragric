@@ -22,8 +22,10 @@ supabase/migrations/               # Esquema, catálogo DPA y políticas RLS
 
 ## Puesta en marcha
 
-1. Aplicar `supabase/migrations/*.sql` en el proyecto Supabase.
-2. Completar `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY` en `src/core/config.js`.
+Proyecto Supabase: `Ceragric` (`vmozwtdacmroznlxdkzl`, sa-east-1), migraciones ya aplicadas.
+
+1. Migraciones en `supabase/migrations/` (esquema + catálogo DPA).
+2. URL y publishable key en `src/core/config.js`; provincia preseleccionada: Los Ríos.
 3. GitHub → Settings → Pages → Deploy from branch `master` / root.
 
 ## Seguridad

@@ -65,6 +65,7 @@ export async function iniciarRegistroProductor() {
     selectProvincia: campos.provincia,
     selectCanton: campos.canton,
     selectParroquia: campos.parroquia,
+    provinciaPredeterminada: CONFIG.PROVINCIA_PREDETERMINADA,
   });
 
   const mostrarMensaje = (texto, tipo) => {

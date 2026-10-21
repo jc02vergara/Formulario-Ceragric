@@ -13,20 +13,27 @@ function buscarHijos(lista, codigo) {
   return lista.find(([codigoItem]) => codigoItem === codigo)?.[2] ?? [];
 }
 
-export async function iniciarSelectorUbicacion({ selectProvincia, selectCanton, selectParroquia }) {
+export async function iniciarSelectorUbicacion({
+  selectProvincia,
+  selectCanton,
+  selectParroquia,
+  provinciaPredeterminada,
+}) {
   const respuesta = await fetch(RUTA_DPA);
   const provincias = await respuesta.json();
   let cantones = [];
 
-  llenarSelect(selectProvincia, provincias, 'Seleccione una provincia');
-  llenarSelect(selectCanton, [], 'Seleccione primero la provincia');
-  llenarSelect(selectParroquia, [], 'Seleccione primero el cantón');
-
-  selectProvincia.addEventListener('change', () => {
+  const cargarCantones = () => {
     cantones = buscarHijos(provincias, selectProvincia.value);
-    llenarSelect(selectCanton, cantones, 'Seleccione un cantón');
+    llenarSelect(selectCanton, cantones, cantones.length ? 'Seleccione un cantón' : 'Seleccione primero la provincia');
     llenarSelect(selectParroquia, [], 'Seleccione primero el cantón');
-  });
+  };
+
+  llenarSelect(selectProvincia, provincias, 'Seleccione una provincia');
+  selectProvincia.value = provinciaPredeterminada ?? '';
+  cargarCantones();
+
+  selectProvincia.addEventListener('change', cargarCantones);
 
   selectCanton.addEventListener('change', () => {
     llenarSelect(selectParroquia, buscarHijos(cantones, selectCanton.value), 'Seleccione una parroquia');
