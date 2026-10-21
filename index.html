@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://*.supabase.co; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Registro de Productores | Ceragric S.A.S.</title>
+  <meta name="description" content="Formulario de registro de productores para la certificación Rainforest Alliance gestionada por Ceragric S.A.S.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="src/assets/styles.css">
+  <script type="module" src="src/main.js"></script>
+</head>
+<body>
+  <header class="cabecera">
+    <div class="cabecera__contenido">
+      <p class="cabecera__marca">Ceragric S.A.S.</p>
+      <h1>Registro de productores</h1>
+      <p class="cabecera__descripcion">Información requerida para el proceso de certificación Rainforest Alliance. Los campos marcados con <span class="requerido" aria-hidden="true">*</span> son obligatorios.</p>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <div id="mensaje-formulario" class="mensaje" role="status" aria-live="polite" hidden></div>
+
+    <form id="formulario-productor" novalidate>
+      <fieldset class="tarjeta">
+        <legend>Datos personales</legend>
+
+        <div class="campo">
+          <label for="cedula">Cédula de identidad del productor <span class="requerido">*</span></label>
+          <input id="cedula" name="cedula" type="text" inputmode="numeric" autocomplete="off" required minlength="10" pattern="\d{10}" placeholder="Ej. 0912345678">
+          <small class="ayuda">10 dígitos, sin guiones.</small>
+        </div>
+
+        <div class="campo">
+          <label for="nombres">Nombres del productor <span class="requerido">*</span></label>
+          <input id="nombres" name="nombres" type="text" autocomplete="given-name" required maxlength="80" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' \-]+">
+        </div>
+
+        <div class="grilla">
+          <div class="campo">
+            <label for="apellido_paterno">Apellido paterno <span class="requerido">*</span></label>
+            <input id="apellido_paterno" name="apellido_paterno" type="text" required maxlength="60" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' \-]+">
+          </div>
+          <div class="campo">
+            <label for="apellido_materno">Apellido materno <span class="requerido">*</span></label>
+            <input id="apellido_materno" name="apellido_materno" type="text" required maxlength="60" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' \-]+">
+          </div>
+        </div>
+
+        <div class="grilla">
+          <div class="campo">
+            <label for="genero">Género <span class="requerido">*</span></label>
+            <select id="genero" name="genero" required>
+              <option value="">Seleccione</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="fecha_nacimiento">Fecha de nacimiento <span class="requerido">*</span></label>
+            <input id="fecha_nacimiento" name="fecha_nacimiento" type="date" required min="1900-01-01">
+          </div>
+        </div>
+
+        <div class="grilla">
+          <div class="campo">
+            <label for="estado_civil">Estado civil <span class="requerido">*</span></label>
+            <select id="estado_civil" name="estado_civil" required>
+              <option value="">Seleccione</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="nivel_estudio">Nivel de estudio alcanzado <span class="requerido">*</span></label>
+            <select id="nivel_estudio" name="nivel_estudio" required>
+              <option value="">Seleccione</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="tarjeta">
+        <legend>Ubicación</legend>
+
+        <div class="grilla grilla--3">
+          <div class="campo">
+            <label for="provincia">Provincia <span class="requerido">*</span></label>
+            <select id="provincia" name="provincia" required></select>
+          </div>
+          <div class="campo">
+            <label for="canton">Cantón <span class="requerido">*</span></label>
+            <select id="canton" name="canton" required disabled></select>
+          </div>
+          <div class="campo">
+            <label for="parroquia">Parroquia <span class="requerido">*</span></label>
+            <select id="parroquia" name="parroquia" required disabled></select>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="recinto">Recinto <span class="requerido">*</span></label>
+          <input id="recinto" name="recinto" type="text" required maxlength="120">
+        </div>
+
+        <div class="geo">
+          <div class="geo__encabezado">
+            <p class="geo__titulo">Coordenadas GPS <span class="requerido">*</span></p>
+            <button id="boton-ubicacion" type="button" class="boton boton--secundario">Obtener mi ubicación</button>
+          </div>
+          <p id="estado-ubicacion" class="geo__estado" aria-live="polite">Pulse el botón y acepte el permiso de ubicación del navegador.</p>
+          <div class="grilla">
+            <div class="campo">
+              <label for="latitud">Latitud</label>
+              <input id="latitud" name="latitud" type="text" readonly required tabindex="-1">
+            </div>
+            <div class="campo">
+              <label for="longitud">Longitud</label>
+              <input id="longitud" name="longitud" type="text" readonly required tabindex="-1">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <button id="boton-enviar" type="submit" class="boton boton--primario">Enviar información</button>
+    </form>
+  </main>
+
+  <footer class="pie">
+    <p>Ceragric S.A.S. · Los datos se usan exclusivamente para el proceso de certificación.</p>
+  </footer>
+</body>
+</html>
