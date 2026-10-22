@@ -19,11 +19,13 @@ function construirCambios(datos) {
     ceragric_parroquia_id: datos.get('parroquia'),
     ceragric_productores_recinto: normalizarNombrePropio(datos.get('recinto')),
     ceragric_productores_telefono: telefono || null,
+    ceragric_productores_latitud: Number(datos.get('latitud')),
+    ceragric_productores_longitud: Number(datos.get('longitud')),
   };
 }
 
 /**
- * Diálogo modal para editar un productor. La cédula y las coordenadas son de solo lectura.
+ * Diálogo modal para editar un productor. La cédula es de solo lectura.
  */
 export async function crearDialogoEdicion({ dialogo, alGuardar }) {
   const formulario = dialogo.querySelector('form');
@@ -75,7 +77,8 @@ export async function crearDialogoEdicion({ dialogo, alGuardar }) {
       campos.nivel_estudio.value = String(productor.ceragric_productores_nivel_estudio);
       campos.recinto.value = productor.ceragric_productores_recinto;
       campos.telefono.value = productor.ceragric_productores_telefono ?? '';
-      campos.coordenadas.value = `${productor.ceragric_productores_latitud}, ${productor.ceragric_productores_longitud}`;
+      campos.latitud.value = productor.ceragric_productores_latitud;
+      campos.longitud.value = productor.ceragric_productores_longitud;
       selector.establecerParroquia(productor.ceragric_parroquia_id);
       dialogo.showModal();
     },

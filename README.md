@@ -33,8 +33,8 @@ Proyecto Supabase: `Ceragric` (`vmozwtdacmroznlxdkzl`, sa-east-1), migraciones y
 - El rol `anon` solo tiene `INSERT` sobre `ceragric_productores`; no puede leer, editar ni borrar.
 - La base valida cédula (módulo 10), rangos, formato de nombres, edad mínima (18) y coordenadas dentro de Ecuador.
 - Panel en `/panel/`: solo usuarios de Supabase Auth registrados en `ceragric_administradores` pueden leer y editar.
-  Editables: nombres, apellidos, género, fecha de nacimiento, estado civil, nivel de estudio, ubicación, recinto y teléfono.
-  No editables: cédula, coordenadas y fecha de registro.
+  Editables: nombres, apellidos, género, fecha de nacimiento, estado civil, nivel de estudio, ubicación, recinto,
+  teléfono, latitud y longitud. No editables: cédula y fecha de registro.
 - Alta de administrador: crear el usuario en Supabase (Authentication → Users → Add user) y luego
   `insert into ceragric_administradores (ceragric_usuario_id) select id from auth.users where email = '<correo>';`
 

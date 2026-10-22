@@ -109,8 +109,9 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
 
     async reemplazar(productor) {
       productores.set(productor.ceragric_productores_id, productor);
-      const filaAnterior = cuerpo.querySelector(`tr[data-id="${CSS.escape(productor.ceragric_productores_id)}"]`);
       const filaNueva = await crearFila(productor);
+      // La fila anterior se busca después de construir la nueva: el guardado y Realtime pueden llegar casi a la vez.
+      const filaAnterior = cuerpo.querySelector(`tr[data-id="${CSS.escape(productor.ceragric_productores_id)}"]`);
       if (filaAnterior) filaAnterior.replaceWith(filaNueva);
       else cuerpo.prepend(filaNueva);
       resaltar(filaNueva);

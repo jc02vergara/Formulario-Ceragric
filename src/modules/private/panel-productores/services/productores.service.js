@@ -14,6 +14,17 @@ export async function listarProductores() {
   return data;
 }
 
+export async function obtenerProductor(id) {
+  const { data, error } = await obtenerClienteSupabase()
+    .from(CONFIG.TABLA_PRODUCTORES)
+    .select('*')
+    .eq('ceragric_productores_id', id)
+    .single();
+
+  if (error) throw new Error('No se pudo cargar el registro.');
+  return data;
+}
+
 export async function actualizarProductor(id, cambios) {
   const { data, error } = await obtenerClienteSupabase()
     .from(CONFIG.TABLA_PRODUCTORES)
@@ -28,15 +39,16 @@ export async function actualizarProductor(id, cambios) {
 
 /**
  * Escucha inserciones y actualizaciones en tiempo real. La RLS limita los eventos a administradores.
+ * Solo entrega el id: el payload de Realtime puede llegar incompleto, así que la fila se vuelve a consultar.
  */
 export function escucharCambiosProductores({ alInsertar, alActualizar, alCambiarEstado }) {
   const canal = obtenerClienteSupabase()
     .channel(CANAL_TIEMPO_REAL)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: CONFIG.TABLA_PRODUCTORES }, ({ new: fila }) =>
-      alInsertar(fila)
+      alInsertar(fila?.ceragric_productores_id)
     )
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: CONFIG.TABLA_PRODUCTORES }, ({ new: fila }) =>
-      alActualizar(fila)
+      alActualizar(fila?.ceragric_productores_id)
     )
     .subscribe((estado) => alCambiarEstado(estado === 'SUBSCRIBED'));
 

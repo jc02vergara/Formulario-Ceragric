@@ -1,6 +1,11 @@
 import { crearDialogoEdicion } from '../components/dialogo-edicion.js';
 import { crearTablaProductores } from '../components/tabla-productores.js';
-import { actualizarProductor, escucharCambiosProductores, listarProductores } from '../services/productores.service.js';
+import {
+  actualizarProductor,
+  escucharCambiosProductores,
+  listarProductores,
+  obtenerProductor,
+} from '../services/productores.service.js';
 import {
   SinPermisoError,
   cerrarSesion,
@@ -33,6 +38,15 @@ export async function iniciarPanelProductores() {
     alGuardar: async (id, cambios) => tabla.reemplazar(await actualizarProductor(id, cambios)),
   });
 
+  const refrescarFila = async (id, aplicar) => {
+    if (!id) return;
+    try {
+      await aplicar(await obtenerProductor(id));
+    } catch {
+      // Si el registro ya no es visible (sesión expirada o permisos), se conserva la fila actual.
+    }
+  };
+
   const mostrarAcceso = (mensaje = '') => {
     dejarDeEscuchar?.();
     vistaPanel.hidden = true;
@@ -54,8 +68,8 @@ export async function iniciarPanelProductores() {
     vistaPanel.hidden = false;
     await tabla.cargar(await listarProductores());
     dejarDeEscuchar = escucharCambiosProductores({
-      alInsertar: (productor) => tabla.agregar(productor),
-      alActualizar: (productor) => tabla.reemplazar(productor),
+      alInsertar: (id) => refrescarFila(id, tabla.agregar),
+      alActualizar: (id) => refrescarFila(id, tabla.reemplazar),
       alCambiarEstado: (conectado) => {
         estadoConexion.textContent = conectado ? 'En vivo' : 'Sin conexión en vivo';
         indicadorVivo.hidden = !conectado;
