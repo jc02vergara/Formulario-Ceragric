@@ -53,7 +53,7 @@
             <thead>
               <tr>
                 <th>Cédula</th><th>Productor</th><th>Género</th><th>Cantón / Parroquia</th>
-                <th>Recinto</th><th>Teléfono</th><th>Registro</th><th>GPS</th><th></th>
+                <th>Recinto</th><th>Teléfono</th><th>Registro</th><th>Acciones</th>
               </tr>
             </thead>
             <tbody id="cuerpo-productores"></tbody>
@@ -63,6 +63,17 @@
       </div>
     </section>
   </main>
+
+  <div id="aviso" class="aviso" role="status" aria-live="polite" hidden></div>
+
+  <dialog id="dialogo-confirmacion" class="dialogo dialogo--pequeno">
+    <h2 class="tarjeta__titulo" data-titulo></h2>
+    <p data-descripcion></p>
+    <div class="dialogo__acciones">
+      <button type="button" class="boton boton--secundario" data-cancelar>Cancelar</button>
+      <button type="button" class="boton boton--peligro" data-aceptar></button>
+    </div>
+  </dialog>
 
   <dialog id="dialogo-edicion" class="dialogo">
     <form novalidate>

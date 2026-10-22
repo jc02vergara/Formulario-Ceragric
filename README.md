@@ -35,6 +35,8 @@ Proyecto Supabase: `Ceragric` (`vmozwtdacmroznlxdkzl`, sa-east-1), migraciones y
 - Panel en `/panel/`: solo usuarios de Supabase Auth registrados en `ceragric_administradores` pueden leer y editar.
   Editables: nombres, apellidos, género, fecha de nacimiento, estado civil, nivel de estudio, ubicación, recinto,
   teléfono, latitud y longitud. No editables: cédula y fecha de registro.
+- Acciones por fila: WhatsApp (celulares 09…), llamar, Google Maps, cómo llegar, copiar cédula/ficha y eliminar
+  (con confirmación; la eliminación es definitiva).
 - Alta de administrador: crear el usuario en Supabase (Authentication → Users → Add user) y luego
   `insert into ceragric_administradores (ceragric_usuario_id) select id from auth.users where email = '<correo>';`
 

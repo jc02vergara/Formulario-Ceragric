@@ -1,8 +1,12 @@
+import { crearAviso } from '../components/aviso.js';
+import { crearDialogoConfirmacion } from '../components/dialogo-confirmacion.js';
 import { crearDialogoEdicion } from '../components/dialogo-edicion.js';
-import { crearTablaProductores } from '../components/tabla-productores.js';
+import { crearTablaProductores, nombreCompleto } from '../components/tabla-productores.js';
 import { exportarProductoresExcel } from '../services/exportar-productores.service.js';
+import { construirFicha } from '../services/ficha.service.js';
 import {
   actualizarProductor,
+  eliminarProductor,
   escucharCambiosProductores,
   listarProductores,
   obtenerProductor,
@@ -26,17 +30,55 @@ export async function iniciarPanelProductores() {
   const indicadorVivo = document.getElementById('indicador-vivo');
   let dejarDeEscuchar = null;
 
+  const mostrarAviso = crearAviso(document.getElementById('aviso'));
+  const confirmacion = crearDialogoConfirmacion(document.getElementById('dialogo-confirmacion'));
+
+  const copiar = async (texto, mensajeExito) => {
+    try {
+      await navigator.clipboard.writeText(texto);
+      mostrarAviso(mensajeExito);
+    } catch {
+      mostrarAviso('No se pudo copiar al portapapeles.', 'error');
+    }
+  };
+
+  const confirmarYEliminar = async (id) => {
+    const productor = tabla.obtener(id);
+    const aceptado = await confirmacion.confirmar({
+      textoTitulo: 'Eliminar registro',
+      textoDescripcion: `Se eliminará definitivamente a ${nombreCompleto(productor)} (cédula ${productor.ceragric_productores_cedula}). Esta acción no se puede deshacer.`,
+      textoAceptar: 'Eliminar',
+    });
+    if (!aceptado) return;
+
+    try {
+      await eliminarProductor(id);
+      tabla.eliminar(id);
+      mostrarAviso('Registro eliminado.');
+    } catch (error) {
+      mostrarAviso(error.message, 'error');
+    }
+  };
+
   const tabla = crearTablaProductores({
     cuerpo: document.getElementById('cuerpo-productores'),
     inputBusqueda: document.getElementById('busqueda'),
     contador: document.getElementById('contador'),
     estadoVacio: document.getElementById('estado-vacio'),
-    alEditar: (productor) => dialogo.abrir(productor),
+    acciones: {
+      alEditar: (id) => dialogo.abrir(tabla.obtener(id)),
+      alCopiarCedula: (id) => copiar(tabla.obtener(id).ceragric_productores_cedula, 'Cédula copiada.'),
+      alCopiarFicha: async (id) => copiar(await construirFicha(tabla.obtener(id)), 'Ficha copiada.'),
+      alEliminar: confirmarYEliminar,
+    },
   });
 
   const dialogo = await crearDialogoEdicion({
     dialogo: document.getElementById('dialogo-edicion'),
-    alGuardar: async (id, cambios) => tabla.reemplazar(await actualizarProductor(id, cambios)),
+    alGuardar: async (id, cambios) => {
+      await tabla.reemplazar(await actualizarProductor(id, cambios));
+      mostrarAviso('Cambios guardados.');
+    },
   });
 
   const refrescarFila = async (id, aplicar) => {
@@ -71,6 +113,7 @@ export async function iniciarPanelProductores() {
     dejarDeEscuchar = escucharCambiosProductores({
       alInsertar: (id) => refrescarFila(id, tabla.agregar),
       alActualizar: (id) => refrescarFila(id, tabla.reemplazar),
+      alEliminar: (id) => id && tabla.eliminar(id),
       alCambiarEstado: (conectado) => {
         estadoConexion.textContent = conectado ? 'En vivo' : 'Sin conexión en vivo';
         indicadorVivo.hidden = !conectado;

@@ -1,10 +1,11 @@
 import { GENEROS, obtenerEtiqueta } from '../../../../shared/catalogos.js';
 import { describirParroquia } from '../../../../shared/services/dpa.service.js';
+import { crearCeldaAcciones } from './menu-acciones.js';
 
 const FORMATO_FECHA = new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short' });
 const DURACION_RESALTADO_MS = 4000;
 
-function nombreCompleto(productor) {
+export function nombreCompleto(productor) {
   return [
     productor.ceragric_productores_nombres,
     productor.ceragric_productores_apellido_paterno,
@@ -19,20 +20,30 @@ function crearCelda(texto, etiqueta) {
   return celda;
 }
 
-function crearEnlaceMapa(productor) {
-  const enlace = document.createElement('a');
-  enlace.href = `https://www.google.com/maps?q=${productor.ceragric_productores_latitud},${productor.ceragric_productores_longitud}`;
-  enlace.target = '_blank';
-  enlace.rel = 'noopener noreferrer';
-  enlace.textContent = 'Ver mapa';
-  return enlace;
-}
-
 /**
  * Tabla de productores con filtro por texto. Todo el contenido se inserta con textContent (sin HTML crudo).
  */
-export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoVacio, alEditar }) {
+export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoVacio, acciones }) {
   const productores = new Map();
+
+  // Un solo menú abierto a la vez; se cierra al hacer clic fuera o con Escape.
+  document.addEventListener('click', (evento) => {
+    for (const menu of cuerpo.querySelectorAll('details.menu[open]')) {
+      if (!menu.contains(evento.target)) menu.open = false;
+    }
+  });
+  // El menú usa posición fija: al desplazar la página se cierra para no quedar desalineado.
+  window.addEventListener(
+    'scroll',
+    () => {
+      for (const menu of cuerpo.querySelectorAll('details.menu[open]')) menu.open = false;
+    },
+    { capture: true, passive: true }
+  );
+  document.addEventListener('keydown', (evento) => {
+    if (evento.key !== 'Escape') return;
+    for (const menu of cuerpo.querySelectorAll('details.menu[open]')) menu.open = false;
+  });
 
   const coincideBusqueda = (productor) => {
     const termino = inputBusqueda.value.trim().toUpperCase();
@@ -47,18 +58,6 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
     const fila = document.createElement('tr');
     fila.dataset.id = productor.ceragric_productores_id;
 
-    const celdaMapa = document.createElement('td');
-    celdaMapa.dataset.etiqueta = 'GPS';
-    celdaMapa.append(crearEnlaceMapa(productor));
-
-    const celdaAccion = document.createElement('td');
-    const botonEditar = document.createElement('button');
-    botonEditar.type = 'button';
-    botonEditar.className = 'boton boton--secundario boton--compacto';
-    botonEditar.textContent = 'Editar';
-    botonEditar.addEventListener('click', () => alEditar(productores.get(productor.ceragric_productores_id)));
-    celdaAccion.append(botonEditar);
-
     fila.append(
       crearCelda(productor.ceragric_productores_cedula, 'Cédula'),
       crearCelda(nombreCompleto(productor), 'Productor'),
@@ -67,8 +66,7 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
       crearCelda(productor.ceragric_productores_recinto, 'Recinto'),
       crearCelda(productor.ceragric_productores_telefono ?? '—', 'Teléfono'),
       crearCelda(FORMATO_FECHA.format(new Date(productor.ceragric_productores_fecha_registro)), 'Registro'),
-      celdaMapa,
-      celdaAccion
+      crearCeldaAcciones(productor, acciones)
     );
     fila.hidden = !coincideBusqueda(productor);
     return fila;
@@ -91,6 +89,16 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
   });
 
   return {
+    obtener(id) {
+      return productores.get(id);
+    },
+
+    eliminar(id) {
+      productores.delete(id);
+      cuerpo.querySelector(`tr[data-id="${CSS.escape(id)}"]`)?.remove();
+      actualizarContador();
+    },
+
     obtenerVisibles() {
       return [...cuerpo.rows].filter((fila) => !fila.hidden).map((fila) => productores.get(fila.dataset.id));
     },

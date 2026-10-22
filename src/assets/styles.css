@@ -229,3 +229,65 @@ input:user-invalid, select:user-invalid { border-color: var(--color-error); }
 
 .dialogo::backdrop { background: rgb(0 0 0 / 0.45); }
 .dialogo__acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+
+/* ============ Acciones por fila ============ */
+.celda-acciones { white-space: nowrap; }
+.celda-acciones > * + * { margin-left: 6px; }
+
+.menu { position: relative; display: inline-block; }
+.menu__disparador { list-style: none; display: inline-flex; align-items: center; cursor: pointer; user-select: none; }
+.menu__disparador::-webkit-details-marker { display: none; }
+
+.menu__lista {
+  position: fixed;
+  z-index: 20;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+
+.menu__item {
+  font: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--color-texto);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu__item:hover,
+.menu__item:focus-visible { background: var(--color-acento); outline: none; }
+.menu__item--peligro { color: var(--color-error); border-top: 1px solid var(--color-borde); border-radius: 0 0 6px 6px; margin-top: 4px; }
+.menu__item--peligro:hover { background: var(--color-error-fondo); }
+.menu__item--deshabilitado { color: var(--color-texto-suave); opacity: 0.6; cursor: not-allowed; }
+.menu__item--deshabilitado:hover { background: none; }
+
+.boton--peligro { background: var(--color-error); color: #fff; }
+.boton--peligro:hover { filter: brightness(0.92); }
+.dialogo--pequeno { width: min(440px, calc(100% - 32px)); }
+
+.aviso {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 50;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+  background: var(--color-primario-oscuro);
+  color: #fff;
+}
+
+.aviso[data-tipo='error'] { background: var(--color-error); }
+.tabla td a.menu__item { color: var(--color-texto); font-weight: 400; white-space: normal; }
