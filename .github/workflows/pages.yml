@@ -22,6 +22,12 @@ jobs:
       url: ${{ steps.despliegue.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Versionar archivos estáticos
+        # GitHub Pages cachea 10 minutos; el sufijo ?v=<commit> evita mezclar HTML nuevo con JS viejo.
+        run: |
+          VERSION="${GITHUB_SHA::8}"
+          find src -name '*.js' -not -path 'src/assets/vendor/*' -exec sed -E -i "s#(from '\.[^']+\.js)'#\1?v=${VERSION}'#g" {} +
+          sed -E -i "s#((src|href)=\"(\.\./)?src/[^\"]+\.(js|css))\"#\1?v=${VERSION}\"#g" index.html panel/index.html
       - uses: actions/configure-pages@v5
         with:
           enablement: true

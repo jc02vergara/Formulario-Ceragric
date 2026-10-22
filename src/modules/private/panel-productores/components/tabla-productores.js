@@ -91,6 +91,10 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
   });
 
   return {
+    obtenerVisibles() {
+      return [...cuerpo.rows].filter((fila) => !fila.hidden).map((fila) => productores.get(fila.dataset.id));
+    },
+
     async cargar(lista) {
       productores.clear();
       for (const productor of lista) productores.set(productor.ceragric_productores_id, productor);

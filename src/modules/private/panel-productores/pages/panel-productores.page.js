@@ -1,5 +1,6 @@
 import { crearDialogoEdicion } from '../components/dialogo-edicion.js';
 import { crearTablaProductores } from '../components/tabla-productores.js';
+import { exportarProductoresExcel } from '../services/exportar-productores.service.js';
 import {
   actualizarProductor,
   escucharCambiosProductores,
@@ -88,6 +89,10 @@ export async function iniciarPanelProductores() {
       mostrarAcceso(error.message);
     }
   });
+
+  document.getElementById('boton-exportar').addEventListener('click', () =>
+    exportarProductoresExcel(tabla.obtenerVisibles())
+  );
 
   document.getElementById('boton-salir').addEventListener('click', async () => {
     await cerrarSesion();
