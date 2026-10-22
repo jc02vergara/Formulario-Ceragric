@@ -1,6 +1,7 @@
 import { crearAviso } from '../components/aviso.js';
 import { crearDialogoConfirmacion } from '../components/dialogo-confirmacion.js';
 import { crearDialogoEdicion } from '../components/dialogo-edicion.js';
+import { crearFiltrosProductores } from '../components/filtros-productores.js';
 import { crearTablaProductores, nombreCompleto } from '../components/tabla-productores.js';
 import { exportarProductoresExcel } from '../services/exportar-productores.service.js';
 import { construirFicha } from '../services/ficha.service.js';
@@ -60,6 +61,25 @@ export async function iniciarPanelProductores() {
     }
   };
 
+  const marcarInspeccion = async (id, inspeccionado) => {
+    try {
+      await tabla.reemplazar(await actualizarProductor(id, { ceragric_productores_inspeccionado: inspeccionado }));
+      mostrarAviso(inspeccionado ? 'Marcado como inspeccionado.' : 'Inspección desmarcada.');
+      return true;
+    } catch {
+      mostrarAviso('No se pudo actualizar la inspección. Intente nuevamente.', 'error');
+      return false;
+    }
+  };
+
+  const filtros = crearFiltrosProductores({
+    selectCanton: document.getElementById('filtro-canton'),
+    selectParroquia: document.getElementById('filtro-parroquia'),
+    selectInspeccion: document.getElementById('filtro-inspeccion'),
+    botonLimpiar: document.getElementById('boton-limpiar-filtros'),
+    alCambiar: () => tabla.refiltrar(),
+  });
+
   const tabla = crearTablaProductores({
     cuerpo: document.getElementById('cuerpo-productores'),
     inputBusqueda: document.getElementById('busqueda'),
@@ -70,6 +90,12 @@ export async function iniciarPanelProductores() {
       alCopiarCedula: (id) => copiar(tabla.obtener(id).ceragric_productores_cedula, 'Cédula copiada.'),
       alCopiarFicha: async (id) => copiar(await construirFicha(tabla.obtener(id)), 'Ficha copiada.'),
       alEliminar: confirmarYEliminar,
+      alMarcarInspeccion: marcarInspeccion,
+    },
+    filtro: filtros,
+    alCambiarDatos: async (productores) => {
+      await filtros.actualizarOpciones(productores);
+      tabla.refiltrar();
     },
   });
 

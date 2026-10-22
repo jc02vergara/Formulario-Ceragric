@@ -291,3 +291,21 @@ input:user-invalid, select:user-invalid { border-color: var(--color-error); }
 
 .aviso[data-tipo='error'] { background: var(--color-error); }
 .tabla td a.menu__item { color: var(--color-texto); font-weight: 400; white-space: normal; }
+
+/* ============ Filtros e inspección ============ */
+.filtros { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+.filtros select { flex: 1 1 200px; width: auto; min-height: 40px; padding: 6px 10px; font-size: 0.9rem; }
+
+.boton--enlace {
+  background: none;
+  color: var(--color-primario);
+  min-height: 40px;
+  padding: 6px 8px;
+  text-decoration: underline;
+}
+
+.casilla { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; margin: 0; font-weight: 400; }
+.casilla input { width: 20px; height: 20px; min-height: 0; padding: 0; accent-color: var(--color-primario); cursor: pointer; }
+.casilla__fecha { font-size: 0.82rem; color: var(--color-texto-suave); white-space: nowrap; }
+.fila--inspeccionada td:first-child { box-shadow: inset 3px 0 0 var(--color-primario); }
+.fila--inspeccionada .casilla__fecha { color: var(--color-primario-oscuro); font-weight: 600; }

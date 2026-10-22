@@ -16,5 +16,6 @@ export async function construirFicha(productor) {
     `Ubicación: ${ubicacion.provincia} / ${ubicacion.canton} / ${ubicacion.parroquia} — Recinto ${productor.ceragric_productores_recinto}`,
     `Teléfono: ${productor.ceragric_productores_telefono ?? 'No registrado'}`,
     `GPS: ${productor.ceragric_productores_latitud}, ${productor.ceragric_productores_longitud}`,
+    `Inspección en campo: ${productor.ceragric_productores_inspeccionado ? 'Realizada' : 'Pendiente'}`,
   ].join('\n');
 }

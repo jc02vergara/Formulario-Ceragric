@@ -5,7 +5,7 @@ import { descargarXlsx } from './xlsx.js';
 const ENCABEZADOS = [
   'Cédula', 'Nombres', 'Apellido paterno', 'Apellido materno', 'Género', 'Fecha de nacimiento',
   'Estado civil', 'Nivel de estudio', 'Provincia', 'Cantón', 'Parroquia', 'Recinto', 'Teléfono',
-  'Latitud', 'Longitud', 'Fecha de registro', 'Última actualización',
+  'Latitud', 'Longitud', 'Inspeccionado', 'Fecha de inspección', 'Fecha de registro', 'Última actualización',
 ];
 
 const FORMATO_FECHA_HORA = new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short' });
@@ -32,6 +32,8 @@ async function construirFila(productor) {
     productor.ceragric_productores_telefono ?? '',
     Number(productor.ceragric_productores_latitud),
     Number(productor.ceragric_productores_longitud),
+    productor.ceragric_productores_inspeccionado ? 'Sí' : 'No',
+    formatearFechaHora(productor.ceragric_productores_fecha_inspeccion),
     formatearFechaHora(productor.ceragric_productores_fecha_registro),
     formatearFechaHora(productor.ceragric_productores_fecha_actualizacion),
   ];

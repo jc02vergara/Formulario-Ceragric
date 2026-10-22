@@ -37,6 +37,8 @@ Proyecto Supabase: `Ceragric` (`vmozwtdacmroznlxdkzl`, sa-east-1), migraciones y
   teléfono, latitud y longitud. No editables: cédula y fecha de registro.
 - Acciones por fila: WhatsApp (celulares 09…), llamar, Google Maps, cómo llegar, copiar cédula/ficha y eliminar
   (con confirmación; la eliminación es definitiva).
+- Filtros por cantón, parroquia e inspección (combinables con la búsqueda; la exportación respeta lo filtrado).
+- Casilla "Inspeccionado en campo": la fecha de inspección la asigna la base al marcarla.
 - Alta de administrador: crear el usuario en Supabase (Authentication → Users → Add user) y luego
   `insert into ceragric_administradores (ceragric_usuario_id) select id from auth.users where email = '<correo>';`
 

@@ -44,8 +44,19 @@
         <div class="barra">
           <input id="busqueda" type="search" placeholder="Buscar por cédula, nombre o recinto" aria-label="Buscar">
           <span class="barra__info"><span id="indicador-vivo" class="punto-vivo" aria-hidden="true" hidden></span><span id="estado-conexion">Conectando…</span> · <span id="contador"></span></span>
-          <button id="boton-exportar" type="button" class="boton boton--primario boton--auto boton--compacto" title="Exporta los registros visibles (respeta la búsqueda)">Exportar a Excel</button>
+          <button id="boton-exportar" type="button" class="boton boton--primario boton--auto boton--compacto" title="Exporta los registros visibles (respeta la búsqueda y los filtros)">Exportar a Excel</button>
           <button id="boton-salir" type="button" class="boton boton--secundario boton--compacto">Salir</button>
+        </div>
+
+        <div class="filtros">
+          <select id="filtro-canton" aria-label="Filtrar por cantón"><option value="">Todos los cantones</option></select>
+          <select id="filtro-parroquia" aria-label="Filtrar por parroquia"><option value="">Todas las parroquias</option></select>
+          <select id="filtro-inspeccion" aria-label="Filtrar por inspección">
+            <option value="">Inspección: todos</option>
+            <option value="si">Inspeccionados</option>
+            <option value="no">Pendientes de inspección</option>
+          </select>
+          <button id="boton-limpiar-filtros" type="button" class="boton boton--enlace" hidden>Limpiar filtros</button>
         </div>
 
         <div class="tabla-contenedor">
@@ -53,7 +64,7 @@
             <thead>
               <tr>
                 <th>Cédula</th><th>Productor</th><th>Género</th><th>Cantón / Parroquia</th>
-                <th>Recinto</th><th>Teléfono</th><th>Registro</th><th>Acciones</th>
+                <th>Recinto</th><th>Teléfono</th><th>Registro</th><th>Inspeccionado</th><th>Acciones</th>
               </tr>
             </thead>
             <tbody id="cuerpo-productores"></tbody>

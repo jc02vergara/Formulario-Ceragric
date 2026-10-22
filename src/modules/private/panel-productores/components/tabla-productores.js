@@ -3,6 +3,7 @@ import { describirParroquia } from '../../../../shared/services/dpa.service.js';
 import { crearCeldaAcciones } from './menu-acciones.js';
 
 const FORMATO_FECHA = new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short' });
+const FORMATO_FECHA_CORTA = new Intl.DateTimeFormat('es-EC', { dateStyle: 'medium' });
 const DURACION_RESALTADO_MS = 4000;
 
 export function nombreCompleto(productor) {
@@ -20,10 +21,37 @@ function crearCelda(texto, etiqueta) {
   return celda;
 }
 
+function crearCeldaInspeccion(productor, alMarcar) {
+  const celda = document.createElement('td');
+  celda.dataset.etiqueta = 'Inspeccionado';
+  const etiqueta = document.createElement('label');
+  etiqueta.className = 'casilla';
+  const casilla = document.createElement('input');
+  casilla.type = 'checkbox';
+  casilla.checked = productor.ceragric_productores_inspeccionado;
+  casilla.setAttribute('aria-label', 'Inspeccionado en campo');
+  const fecha = document.createElement('span');
+  fecha.className = 'casilla__fecha';
+  fecha.textContent = productor.ceragric_productores_fecha_inspeccion
+    ? FORMATO_FECHA_CORTA.format(new Date(productor.ceragric_productores_fecha_inspeccion))
+    : 'Pendiente';
+
+  casilla.addEventListener('change', async () => {
+    casilla.disabled = true;
+    const exito = await alMarcar(productor.ceragric_productores_id, casilla.checked);
+    if (!exito) casilla.checked = !casilla.checked;
+    casilla.disabled = false;
+  });
+
+  etiqueta.append(casilla, fecha);
+  celda.append(etiqueta);
+  return celda;
+}
+
 /**
- * Tabla de productores con filtro por texto. Todo el contenido se inserta con textContent (sin HTML crudo).
+ * Tabla de productores con búsqueda por texto y filtros externos. Todo el contenido se inserta con textContent (sin HTML crudo).
  */
-export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoVacio, acciones }) {
+export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoVacio, acciones, filtro, alCambiarDatos }) {
   const productores = new Map();
 
   // Un solo menú abierto a la vez; se cierra al hacer clic fuera o con Escape.
@@ -45,7 +73,8 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
     for (const menu of cuerpo.querySelectorAll('details.menu[open]')) menu.open = false;
   });
 
-  const coincideBusqueda = (productor) => {
+  const coincide = (productor) => {
+    if (!filtro.coincide(productor)) return false;
     const termino = inputBusqueda.value.trim().toUpperCase();
     if (!termino) return true;
     return `${productor.ceragric_productores_cedula} ${nombreCompleto(productor)} ${productor.ceragric_productores_recinto}`
@@ -53,10 +82,13 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
       .includes(termino);
   };
 
+  const notificarCambioDatos = () => alCambiarDatos([...productores.values()]);
+
   const crearFila = async (productor) => {
     const ubicacion = await describirParroquia(productor.ceragric_parroquia_id);
     const fila = document.createElement('tr');
     fila.dataset.id = productor.ceragric_productores_id;
+    fila.classList.toggle('fila--inspeccionada', productor.ceragric_productores_inspeccionado);
 
     fila.append(
       crearCelda(productor.ceragric_productores_cedula, 'Cédula'),
@@ -66,9 +98,10 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
       crearCelda(productor.ceragric_productores_recinto, 'Recinto'),
       crearCelda(productor.ceragric_productores_telefono ?? '—', 'Teléfono'),
       crearCelda(FORMATO_FECHA.format(new Date(productor.ceragric_productores_fecha_registro)), 'Registro'),
+      crearCeldaInspeccion(productor, acciones.alMarcarInspeccion),
       crearCeldaAcciones(productor, acciones)
     );
-    fila.hidden = !coincideBusqueda(productor);
+    fila.hidden = !coincide(productor);
     return fila;
   };
 
@@ -83,12 +116,16 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
     setTimeout(() => fila.classList.remove('fila--nueva'), DURACION_RESALTADO_MS);
   };
 
-  inputBusqueda.addEventListener('input', () => {
-    for (const fila of cuerpo.rows) fila.hidden = !coincideBusqueda(productores.get(fila.dataset.id));
+  const refiltrar = () => {
+    for (const fila of cuerpo.rows) fila.hidden = !coincide(productores.get(fila.dataset.id));
     actualizarContador();
-  });
+  };
+
+  inputBusqueda.addEventListener('input', refiltrar);
 
   return {
+    refiltrar,
+
     obtener(id) {
       return productores.get(id);
     },
@@ -97,6 +134,7 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
       productores.delete(id);
       cuerpo.querySelector(`tr[data-id="${CSS.escape(id)}"]`)?.remove();
       actualizarContador();
+      notificarCambioDatos();
     },
 
     obtenerVisibles() {
@@ -108,6 +146,7 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
       for (const productor of lista) productores.set(productor.ceragric_productores_id, productor);
       cuerpo.replaceChildren(...(await Promise.all(lista.map(crearFila))));
       actualizarContador();
+      notificarCambioDatos();
     },
 
     async agregar(productor) {
@@ -117,6 +156,7 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
       cuerpo.prepend(fila);
       resaltar(fila);
       actualizarContador();
+      notificarCambioDatos();
     },
 
     async reemplazar(productor) {
@@ -128,6 +168,7 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
       else cuerpo.prepend(filaNueva);
       resaltar(filaNueva);
       actualizarContador();
+      notificarCambioDatos();
     },
   };
 }
