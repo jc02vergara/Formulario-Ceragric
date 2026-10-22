@@ -166,3 +166,66 @@ input:user-invalid, select:user-invalid { border-color: var(--color-error); }
 .mensaje[data-tipo='error'] { background: var(--color-error-fondo); color: var(--color-error); }
 
 .pie { text-align: center; color: var(--color-texto-suave); font-size: 0.82rem; padding: 0 16px 32px; }
+
+/* ============ Panel de administración ============ */
+.cabecera--panel { padding-bottom: 48px; }
+.cabecera__contenido--ancho,
+.contenedor--ancho { max-width: 1200px; }
+
+.tarjeta__titulo { margin: 0 0 16px; font-size: 1.15rem; color: var(--color-primario-oscuro); }
+
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.barra input[type='search'] { flex: 1 1 260px; width: auto; }
+.barra__info { color: var(--color-texto-suave); font-size: 0.88rem; display: inline-flex; align-items: center; gap: 6px; }
+
+.punto-vivo[hidden] { display: none; }
+.punto-vivo {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2e9d55;
+  box-shadow: 0 0 0 3px rgb(46 157 85 / 0.2);
+}
+
+.boton--compacto { min-height: 36px; padding: 6px 12px; font-size: 0.88rem; }
+.boton--auto { width: auto; margin: 0; }
+
+.tabla-contenedor { overflow-x: auto; }
+.tabla { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.tabla th, .tabla td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--color-borde); vertical-align: middle; }
+.tabla th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-texto-suave); white-space: nowrap; }
+.tabla td a { color: var(--color-primario); font-weight: 600; white-space: nowrap; }
+.tabla__vacio { text-align: center; color: var(--color-texto-suave); padding: 24px 0; margin: 0; }
+.fila--nueva { animation: resaltar 4s ease-out; }
+
+@keyframes resaltar {
+  from { background: #fff4c2; }
+  to { background: transparent; }
+}
+
+@media (max-width: 760px) {
+  .tabla thead { display: none; }
+  .tabla tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--color-borde); }
+  .tabla td { display: flex; justify-content: space-between; gap: 12px; border: 0; padding: 4px 0; }
+  .tabla td::before { content: attr(data-etiqueta); font-weight: 600; color: var(--color-texto-suave); }
+  .tabla td:last-child { justify-content: flex-end; padding-top: 8px; }
+}
+
+.dialogo {
+  width: min(720px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  border: 0;
+  border-radius: var(--radio);
+  padding: 20px;
+  box-shadow: 0 10px 40px rgb(0 0 0 / 0.25);
+}
+
+.dialogo::backdrop { background: rgb(0 0 0 / 0.45); }
+.dialogo__acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }

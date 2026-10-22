@@ -1,9 +1,9 @@
 import { CONFIG } from '../../../../core/config.js';
 import { esCedulaEcuatorianaValida } from '../../../../shared/utils/cedula-ecuador.js';
 import { normalizarNombrePropio } from '../../../../shared/utils/texto.js';
-import { ESTADOS_CIVILES, GENEROS, NIVELES_ESTUDIO } from '../catalogos.js';
+import { ESTADOS_CIVILES, GENEROS, NIVELES_ESTUDIO } from '../../../../shared/catalogos.js';
 import { iniciarCapturaUbicacion } from '../components/captura-ubicacion.js';
-import { iniciarSelectorUbicacion } from '../components/selector-ubicacion.js';
+import { iniciarSelectorUbicacion } from '../../../../shared/components/selector-ubicacion.js';
 import { CedulaDuplicadaError, registrarProductor } from '../services/productor.service.js';
 
 const MENSAJE_CEDULA_INVALIDA = 'Ingrese una cédula ecuatoriana válida de 10 dígitos.';

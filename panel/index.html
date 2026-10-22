@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://vmozwtdacmroznlxdkzl.supabase.co wss://vmozwtdacmroznlxdkzl.supabase.co; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel de productores | Ceragric S.A.S.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../src/assets/styles.css">
+  <script src="../src/assets/vendor/supabase-js-2.45.4.umd.js"></script>
+  <script type="module" src="../src/panel.js"></script>
+</head>
+<body>
+  <header class="cabecera cabecera--panel">
+    <div class="cabecera__contenido cabecera__contenido--ancho">
+      <p class="cabecera__marca">Ceragric S.A.S. · Uso interno</p>
+      <h1>Panel de productores</h1>
+    </div>
+  </header>
+
+  <main>
+    <section id="vista-acceso" class="contenedor" hidden>
+      <form id="formulario-acceso" class="tarjeta">
+        <h2 class="tarjeta__titulo">Iniciar sesión</h2>
+        <div id="error-acceso" class="mensaje" data-tipo="error" role="alert" hidden></div>
+        <div class="campo">
+          <label for="correo">Correo</label>
+          <input id="correo" name="correo" type="email" autocomplete="username" required>
+        </div>
+        <div class="campo">
+          <label for="contrasena">Contraseña</label>
+          <input id="contrasena" name="contrasena" type="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="boton boton--primario">Entrar</button>
+      </form>
+    </section>
+
+    <section id="vista-panel" class="contenedor contenedor--ancho" hidden>
+      <div class="tarjeta">
+        <div class="barra">
+          <input id="busqueda" type="search" placeholder="Buscar por cédula, nombre o recinto" aria-label="Buscar">
+          <span class="barra__info"><span id="indicador-vivo" class="punto-vivo" aria-hidden="true" hidden></span><span id="estado-conexion">Conectando…</span> · <span id="contador"></span></span>
+          <button id="boton-salir" type="button" class="boton boton--secundario boton--compacto">Salir</button>
+        </div>
+
+        <div class="tabla-contenedor">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>Cédula</th><th>Productor</th><th>Género</th><th>Cantón / Parroquia</th>
+                <th>Recinto</th><th>Teléfono</th><th>Registro</th><th>GPS</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-productores"></tbody>
+          </table>
+          <p id="estado-vacio" class="tabla__vacio" hidden>Aún no hay registros. Aparecerán aquí automáticamente.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="dialogo-edicion" class="dialogo">
+    <form novalidate>
+      <h2 class="tarjeta__titulo">Editar productor</h2>
+      <div data-error class="mensaje" data-tipo="error" role="alert" hidden></div>
+
+      <div class="grilla">
+        <div class="campo">
+          <label for="ed-cedula">Cédula</label>
+          <input id="ed-cedula" name="cedula" type="text" readonly tabindex="-1">
+        </div>
+        <div class="campo">
+          <label for="ed-telefono">Teléfono</label>
+          <input id="ed-telefono" name="telefono" type="tel" inputmode="tel" pattern="0[0-9 ]{8,11}" placeholder="Ej. 0991234567">
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="ed-nombres">Nombres</label>
+        <input id="ed-nombres" name="nombres" type="text" required maxlength="80" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' \-]+">
+      </div>
+
+      <div class="grilla">
+        <div class="campo">
+          <label for="ed-apellido-paterno">Apellido paterno</label>
+          <input id="ed-apellido-paterno" name="apellido_paterno" type="text" required maxlength="60" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' \-]+">
+        </div>
+        <div class="campo">
+          <label for="ed-apellido-materno">Apellido materno</label>
+          <input id="ed-apellido-materno" name="apellido_materno" type="text" required maxlength="60" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' \-]+">
+        </div>
+      </div>
+
+      <div class="grilla">
+        <div class="campo">
+          <label for="ed-genero">Género</label>
+          <select id="ed-genero" name="genero" required></select>
+        </div>
+        <div class="campo">
+          <label for="ed-fecha-nacimiento">Fecha de nacimiento</label>
+          <input id="ed-fecha-nacimiento" name="fecha_nacimiento" type="date" required min="1900-01-01">
+        </div>
+      </div>
+
+      <div class="grilla">
+        <div class="campo">
+          <label for="ed-estado-civil">Estado civil</label>
+          <select id="ed-estado-civil" name="estado_civil" required></select>
+        </div>
+        <div class="campo">
+          <label for="ed-nivel-estudio">Nivel de estudio</label>
+          <select id="ed-nivel-estudio" name="nivel_estudio" required></select>
+        </div>
+      </div>
+
+      <div class="grilla grilla--3">
+        <div class="campo">
+          <label for="ed-provincia">Provincia</label>
+          <select id="ed-provincia" name="provincia" required></select>
+        </div>
+        <div class="campo">
+          <label for="ed-canton">Cantón</label>
+          <select id="ed-canton" name="canton" required></select>
+        </div>
+        <div class="campo">
+          <label for="ed-parroquia">Parroquia</label>
+          <select id="ed-parroquia" name="parroquia" required></select>
+        </div>
+      </div>
+
+      <div class="grilla">
+        <div class="campo">
+          <label for="ed-recinto">Recinto</label>
+          <input id="ed-recinto" name="recinto" type="text" required maxlength="120">
+        </div>
+        <div class="campo">
+          <label for="ed-coordenadas">Coordenadas GPS</label>
+          <input id="ed-coordenadas" name="coordenadas" type="text" readonly tabindex="-1">
+        </div>
+      </div>
+
+      <div class="dialogo__acciones">
+        <button type="button" class="boton boton--secundario" data-cancelar>Cancelar</button>
+        <button type="submit" class="boton boton--primario boton--auto" data-guardar>Guardar cambios</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

@@ -1,26 +1,23 @@
-import { aTituloLegible } from '../../../../shared/utils/texto.js';
+import { buscarHijos, cargarProvincias } from '../services/dpa.service.js';
+import { aTituloLegible } from '../utils/texto.js';
 
-const RUTA_DPA = new URL('../../../../assets/data/dpa-ecuador.json', import.meta.url);
-
-// Estructura del JSON: [codigo, nombre, hijos[]] por nivel (provincia > cantón > parroquia), códigos DPA del INEC.
 function llenarSelect(select, opciones, textoVacio) {
   select.replaceChildren(new Option(textoVacio, ''));
   for (const [codigo, nombre] of opciones) select.add(new Option(aTituloLegible(nombre), codigo));
   select.disabled = opciones.length === 0;
 }
 
-function buscarHijos(lista, codigo) {
-  return lista.find(([codigoItem]) => codigoItem === codigo)?.[2] ?? [];
-}
-
+/**
+ * Enlaza tres selects en cascada (provincia > cantón > parroquia).
+ * Devuelve `establecerParroquia(codigo)` para preseleccionar los tres niveles a partir de una parroquia.
+ */
 export async function iniciarSelectorUbicacion({
   selectProvincia,
   selectCanton,
   selectParroquia,
   provinciaPredeterminada,
 }) {
-  const respuesta = await fetch(RUTA_DPA);
-  const provincias = await respuesta.json();
+  const provincias = await cargarProvincias();
   let cantones = [];
 
   const cargarCantones = () => {
@@ -29,13 +26,24 @@ export async function iniciarSelectorUbicacion({
     llenarSelect(selectParroquia, [], 'Seleccione primero el cantón');
   };
 
+  const cargarParroquias = () => {
+    llenarSelect(selectParroquia, buscarHijos(cantones, selectCanton.value), 'Seleccione una parroquia');
+  };
+
   llenarSelect(selectProvincia, provincias, 'Seleccione una provincia');
   selectProvincia.value = provinciaPredeterminada ?? '';
   cargarCantones();
 
   selectProvincia.addEventListener('change', cargarCantones);
+  selectCanton.addEventListener('change', cargarParroquias);
 
-  selectCanton.addEventListener('change', () => {
-    llenarSelect(selectParroquia, buscarHijos(cantones, selectCanton.value), 'Seleccione una parroquia');
-  });
+  return {
+    establecerParroquia(codigoParroquia) {
+      selectProvincia.value = codigoParroquia.slice(0, 2);
+      cargarCantones();
+      selectCanton.value = codigoParroquia.slice(0, 4);
+      cargarParroquias();
+      selectParroquia.value = codigoParroquia;
+    },
+  };
 }

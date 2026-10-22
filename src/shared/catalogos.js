@@ -1,4 +1,4 @@
-// Diccionario de valores numéricos. Debe coincidir con los COMMENT de la base de datos.
+// Diccionario de valores numéricos compartido por el formulario y el panel. Debe coincidir con los COMMENT de la base de datos.
 
 export const GENEROS = Object.freeze([
   { valor: 1, etiqueta: 'Hombre' },
@@ -20,3 +20,7 @@ export const NIVELES_ESTUDIO = Object.freeze([
   { valor: 4, etiqueta: 'Máster' },
   { valor: 0, etiqueta: 'Sin respuesta' },
 ]);
+
+export function obtenerEtiqueta(catalogo, valor) {
+  return catalogo.find((item) => item.valor === valor)?.etiqueta ?? '';
+}

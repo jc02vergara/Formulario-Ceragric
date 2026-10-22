@@ -6,17 +6,17 @@ Sitio estático (GitHub Pages) que inserta directamente en Supabase.
 ## Estructura
 
 ```text
-index.html                         # Página única del formulario
+index.html                         # Formulario público
+panel/index.html                   # Panel privado (login de administradores)
 src/
- ├── main.js                       # Entry point
+ ├── main.js / panel.js            # Entry points
  ├── core/config.js                # URL y publishable key de Supabase
- ├── assets/                       # Estilos y catálogo DPA del INEC (provincia > cantón > parroquia)
- ├── shared/utils/                 # Validación de cédula (módulo 10) y utilidades de texto
- └── modules/public/registro-productor/
-      ├── catalogos.js             # Valores numéricos de género, estado civil, nivel de estudio
-      ├── components/              # Selects en cascada y captura GPS
-      ├── pages/                   # Controlador del formulario
-      └── services/                # Inserción en Supabase (REST)
+ ├── core/supabase-cliente.js      # Cliente supabase-js (auth + tiempo real) para el panel
+ ├── assets/                       # Estilos, catálogo DPA del INEC y supabase-js 2.45.4 (vendor)
+ ├── shared/                       # Catálogos, selector provincia > cantón > parroquia, cédula, texto
+ └── modules/
+      ├── public/registro-productor/   # Formulario: captura GPS, controlador e inserción (REST)
+      └── private/panel-productores/   # Panel: tabla en vivo, diálogo de edición, sesión
 supabase/migrations/               # Esquema, catálogo DPA y políticas RLS
 ```
 
@@ -32,7 +32,11 @@ Proyecto Supabase: `Ceragric` (`vmozwtdacmroznlxdkzl`, sa-east-1), migraciones y
 
 - El rol `anon` solo tiene `INSERT` sobre `ceragric_productores`; no puede leer, editar ni borrar.
 - La base valida cédula (módulo 10), rangos, formato de nombres, edad mínima (18) y coordenadas dentro de Ecuador.
-- Las respuestas se consultan desde el panel de Supabase en la vista `ceragric_productores_detalle`.
+- Panel en `/panel/`: solo usuarios de Supabase Auth registrados en `ceragric_administradores` pueden leer y editar.
+  Editables: nombres, apellidos, género, fecha de nacimiento, estado civil, nivel de estudio, ubicación, recinto y teléfono.
+  No editables: cédula, coordenadas y fecha de registro.
+- Alta de administrador: crear el usuario en Supabase (Authentication → Users → Add user) y luego
+  `insert into ceragric_administradores (ceragric_usuario_id) select id from auth.users where email = '<correo>';`
 
 ## Catálogo geográfico
 
