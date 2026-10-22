@@ -1,0 +1,1 @@
+comment on column public.ceragric_productores.ceragric_productores_telefono is 'Teléfono ecuatoriano: celular 09XXXXXXXX (lo ingresa el productor en el formulario) o fijo 0XXXXXXXX (solo desde el panel)';

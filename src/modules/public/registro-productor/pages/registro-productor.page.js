@@ -7,6 +7,8 @@ import { iniciarSelectorUbicacion } from '../../../../shared/components/selector
 import { CedulaDuplicadaError, registrarProductor } from '../services/productor.service.js';
 
 const MENSAJE_CEDULA_INVALIDA = 'Ingrese una cédula ecuatoriana válida de 10 dígitos.';
+const MENSAJE_CELULAR_INVALIDO = 'Ingrese un celular ecuatoriano de 10 dígitos que empiece con 09.';
+const PATRON_CELULAR = /^09\d{8}$/;
 const MENSAJE_UBICACION_REQUERIDA = 'Debe obtener la ubicación antes de enviar.';
 
 function llenarCatalogo(select, catalogo) {
@@ -33,6 +35,7 @@ function construirProductor(datos) {
     ceragric_parroquia_id: datos.get('parroquia'),
     ceragric_productores_recinto: normalizarNombrePropio(datos.get('recinto')),
     ceragric_productores_nivel_estudio: Number(datos.get('nivel_estudio')),
+    ceragric_productores_telefono: datos.get('celular'),
   };
 }
 
@@ -47,6 +50,12 @@ export async function iniciarRegistroProductor() {
   llenarCatalogo(campos.estado_civil, ESTADOS_CIVILES);
   llenarCatalogo(campos.nivel_estudio, NIVELES_ESTUDIO);
   campos.fecha_nacimiento.max = calcularFechaMaximaNacimiento();
+
+  campos.celular.addEventListener('input', () => {
+    campos.celular.value = campos.celular.value.replace(/\D/g, '').slice(0, 10);
+    const esValido = campos.celular.value.length < 10 || PATRON_CELULAR.test(campos.celular.value);
+    campos.celular.setCustomValidity(esValido ? '' : MENSAJE_CELULAR_INVALIDO);
+  });
 
   campos.cedula.addEventListener('input', () => {
     campos.cedula.value = campos.cedula.value.replace(/\D/g, '').slice(0, 10);
