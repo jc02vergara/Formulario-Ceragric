@@ -72,8 +72,15 @@ export function crearCeldaAcciones(productor, acciones) {
     telefono
       ? crearEnlace('Llamar', crearEnlaceLlamada(telefono), { externo: false })
       : crearItemDeshabilitado('Llamar', sinTelefono),
-    crearEnlace('Ver en Google Maps', crearEnlaceMapa(latitud, longitud)),
-    crearEnlace('Cómo llegar', crearEnlaceRuta(latitud, longitud)),
+    ...(latitud === null || latitud === undefined
+      ? [
+          crearItemDeshabilitado('Ver en Google Maps', 'Registre las coordenadas con Editar'),
+          crearItemDeshabilitado('Cómo llegar', 'Registre las coordenadas con Editar'),
+        ]
+      : [
+          crearEnlace('Ver en Google Maps', crearEnlaceMapa(latitud, longitud)),
+          crearEnlace('Cómo llegar', crearEnlaceRuta(latitud, longitud)),
+        ]),
     crearBoton('Copiar cédula', cerrarYEjecutar(acciones.alCopiarCedula)),
     crearBoton('Copiar ficha', cerrarYEjecutar(acciones.alCopiarFicha)),
     crearBoton('Eliminar registro', cerrarYEjecutar(acciones.alEliminar), { peligro: true })

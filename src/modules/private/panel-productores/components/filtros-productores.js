@@ -15,9 +15,9 @@ function ordenarPorTexto(mapa) {
 }
 
 /**
- * Filtros por cantón, parroquia y estado de inspección. Las opciones salen de los registros existentes.
+ * Filtros por cantón, parroquia, inspección y tipo de registro. Cantones y parroquias salen de los registros existentes.
  */
-export function crearFiltrosProductores({ selectCanton, selectParroquia, selectInspeccion, botonLimpiar, alCambiar }) {
+export function crearFiltrosProductores({ selectCanton, selectParroquia, selectInspeccion, selectTipo, botonLimpiar, alCambiar }) {
   let productoresActuales = [];
 
   const actualizarParroquias = async () => {
@@ -25,6 +25,7 @@ export function crearFiltrosProductores({ selectCanton, selectParroquia, selectI
     const parroquias = new Map();
     for (const productor of productoresActuales) {
       const codigo = productor.ceragric_parroquia_id;
+      if (!codigo) continue;
       if (cantonSeleccionado && !codigo.startsWith(cantonSeleccionado)) continue;
       if (!parroquias.has(codigo)) parroquias.set(codigo, (await describirParroquia(codigo)).parroquia);
     }
@@ -32,7 +33,7 @@ export function crearFiltrosProductores({ selectCanton, selectParroquia, selectI
   };
 
   const actualizarBotonLimpiar = () => {
-    botonLimpiar.hidden = !selectCanton.value && !selectParroquia.value && !selectInspeccion.value;
+    botonLimpiar.hidden = !selectCanton.value && !selectParroquia.value && !selectInspeccion.value && !selectTipo.value;
   };
 
   selectCanton.addEventListener('change', async () => {
@@ -41,7 +42,7 @@ export function crearFiltrosProductores({ selectCanton, selectParroquia, selectI
     alCambiar();
   });
 
-  for (const select of [selectParroquia, selectInspeccion]) {
+  for (const select of [selectParroquia, selectInspeccion, selectTipo]) {
     select.addEventListener('change', () => {
       actualizarBotonLimpiar();
       alCambiar();
@@ -51,6 +52,7 @@ export function crearFiltrosProductores({ selectCanton, selectParroquia, selectI
   botonLimpiar.addEventListener('click', async () => {
     selectCanton.value = '';
     selectInspeccion.value = ESTADOS_INSPECCION.TODOS;
+    selectTipo.value = '';
     await actualizarParroquias();
     selectParroquia.value = '';
     actualizarBotonLimpiar();
@@ -64,6 +66,7 @@ export function crearFiltrosProductores({ selectCanton, selectParroquia, selectI
       productoresActuales = productores;
       const cantones = new Map();
       for (const productor of productores) {
+        if (!productor.ceragric_parroquia_id) continue;
         const codigo = productor.ceragric_parroquia_id.slice(0, 4);
         if (!cantones.has(codigo)) cantones.set(codigo, (await describirParroquia(productor.ceragric_parroquia_id)).canton);
       }
@@ -73,7 +76,8 @@ export function crearFiltrosProductores({ selectCanton, selectParroquia, selectI
     },
 
     coincide(productor) {
-      const codigo = productor.ceragric_parroquia_id;
+      const codigo = productor.ceragric_parroquia_id ?? '';
+      if (selectTipo.value && productor.ceragric_productores_tipo_registro !== Number(selectTipo.value)) return false;
       if (selectCanton.value && !codigo.startsWith(selectCanton.value)) return false;
       if (selectParroquia.value && codigo !== selectParroquia.value) return false;
       if (selectInspeccion.value === ESTADOS_INSPECCION.INSPECCIONADOS) return productor.ceragric_productores_inspeccionado;

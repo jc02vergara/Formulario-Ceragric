@@ -40,7 +40,34 @@
     </section>
 
     <section id="vista-panel" class="contenedor contenedor--ancho" hidden>
-      <div class="tarjeta">
+      <nav class="pestanas" role="tablist" aria-label="Secciones del panel">
+        <button type="button" role="tab" class="pestanas__item" data-pestana="productores" aria-selected="true">Productores</button>
+        <button type="button" role="tab" class="pestanas__item" data-pestana="registro-rapido" aria-selected="false">Registro rápido</button>
+      </nav>
+
+      <div class="tarjeta" data-panel="registro-rapido" hidden>
+        <h2 class="tarjeta__titulo">Registro rápido</h2>
+        <p class="ayuda ayuda--bloque">Registre al productor con lo mínimo. Quedará marcado como <strong>Registro rápido · completar datos</strong> hasta que complete el resto desde <em>Editar</em>.</p>
+        <form id="formulario-registro-rapido" novalidate>
+          <div class="grilla grilla--3">
+            <div class="campo">
+              <label for="rr-cedula">Cédula <span class="requerido">*</span></label>
+              <input id="rr-cedula" name="cedula" type="text" inputmode="numeric" autocomplete="off" required minlength="10" pattern="\d{10}" placeholder="Ej. 0912345678">
+            </div>
+            <div class="campo">
+              <label for="rr-nombre">Nombre <span class="requerido">*</span></label>
+              <input id="rr-nombre" name="nombre" type="text" autocomplete="off" required maxlength="80" pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' \-]+" placeholder="Ej. Juan Pérez">
+            </div>
+            <div class="campo">
+              <label for="rr-telefono">Teléfono <span class="requerido">*</span></label>
+              <input id="rr-telefono" name="telefono" type="tel" inputmode="numeric" autocomplete="off" required pattern="0\d{8,9}" placeholder="Ej. 0991234567">
+            </div>
+          </div>
+          <button id="boton-registro-rapido" type="submit" class="boton boton--primario boton--auto">Registrar</button>
+        </form>
+      </div>
+
+      <div class="tarjeta" data-panel="productores">
         <div class="barra">
           <input id="busqueda" type="search" placeholder="Buscar por cédula, nombre o recinto" aria-label="Buscar">
           <span class="barra__info"><span id="indicador-vivo" class="punto-vivo" aria-hidden="true" hidden></span><span id="estado-conexion">Conectando…</span> · <span id="contador"></span></span>
@@ -55,6 +82,11 @@
             <option value="">Inspección: todos</option>
             <option value="si">Inspeccionados</option>
             <option value="no">Pendientes de inspección</option>
+          </select>
+          <select id="filtro-tipo" aria-label="Filtrar por tipo de registro">
+            <option value="">Registro: todos</option>
+            <option value="0">Completos</option>
+            <option value="1">Registros rápidos (por completar)</option>
           </select>
           <button id="boton-limpiar-filtros" type="button" class="boton boton--enlace" hidden>Limpiar filtros</button>
         </div>
@@ -90,6 +122,7 @@
     <form novalidate>
       <h2 class="tarjeta__titulo">Editar productor</h2>
       <div data-error class="mensaje" data-tipo="error" role="alert" hidden></div>
+      <p data-nota-rapido class="mensaje mensaje--aviso" hidden>Registro rápido: complete los datos que tenga. Al llenarlos todos, la etiqueta se quita automáticamente.</p>
 
       <div class="grilla">
         <div class="campo">
@@ -121,7 +154,7 @@
       <div class="grilla">
         <div class="campo">
           <label for="ed-genero">Género</label>
-          <select id="ed-genero" name="genero" required></select>
+          <select id="ed-genero" name="genero" required><option value="">Seleccione</option></select>
         </div>
         <div class="campo">
           <label for="ed-fecha-nacimiento">Fecha de nacimiento</label>
@@ -132,11 +165,11 @@
       <div class="grilla">
         <div class="campo">
           <label for="ed-estado-civil">Estado civil</label>
-          <select id="ed-estado-civil" name="estado_civil" required></select>
+          <select id="ed-estado-civil" name="estado_civil" required><option value="">Seleccione</option></select>
         </div>
         <div class="campo">
           <label for="ed-nivel-estudio">Nivel de estudio</label>
-          <select id="ed-nivel-estudio" name="nivel_estudio" required></select>
+          <select id="ed-nivel-estudio" name="nivel_estudio" required><option value="">Seleccione</option></select>
         </div>
       </div>
 

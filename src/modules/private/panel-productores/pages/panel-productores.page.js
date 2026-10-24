@@ -2,11 +2,14 @@ import { crearAviso } from '../components/aviso.js';
 import { crearDialogoConfirmacion } from '../components/dialogo-confirmacion.js';
 import { crearDialogoEdicion } from '../components/dialogo-edicion.js';
 import { crearFiltrosProductores } from '../components/filtros-productores.js';
+import { iniciarPestanas } from '../components/pestanas.js';
+import { iniciarRegistroRapido } from '../components/registro-rapido.js';
 import { crearTablaProductores, nombreCompleto } from '../components/tabla-productores.js';
 import { exportarProductoresExcel } from '../services/exportar-productores.service.js';
 import { construirFicha } from '../services/ficha.service.js';
 import {
   actualizarProductor,
+  crearRegistroRapido,
   eliminarProductor,
   escucharCambiosProductores,
   listarProductores,
@@ -76,6 +79,7 @@ export async function iniciarPanelProductores() {
     selectCanton: document.getElementById('filtro-canton'),
     selectParroquia: document.getElementById('filtro-parroquia'),
     selectInspeccion: document.getElementById('filtro-inspeccion'),
+    selectTipo: document.getElementById('filtro-tipo'),
     botonLimpiar: document.getElementById('boton-limpiar-filtros'),
     alCambiar: () => tabla.refiltrar(),
   });
@@ -107,6 +111,22 @@ export async function iniciarPanelProductores() {
     },
   });
 
+  const pestanas = iniciarPestanas(document.querySelector('.pestanas'));
+
+  iniciarRegistroRapido({
+    formulario: document.getElementById('formulario-registro-rapido'),
+    alRegistrar: async (datos) => {
+      try {
+        await tabla.agregar(await crearRegistroRapido(datos));
+        mostrarAviso('Registro rápido creado. Complete los datos desde Editar.');
+        return true;
+      } catch (error) {
+        mostrarAviso(error.message, 'error');
+        return false;
+      }
+    },
+  });
+
   const refrescarFila = async (id, aplicar) => {
     if (!id) return;
     try {
@@ -135,6 +155,7 @@ export async function iniciarPanelProductores() {
 
     vistaAcceso.hidden = true;
     vistaPanel.hidden = false;
+    pestanas.activar('productores');
     await tabla.cargar(await listarProductores());
     dejarDeEscuchar = escucharCambiosProductores({
       alInsertar: (id) => refrescarFila(id, tabla.agregar),

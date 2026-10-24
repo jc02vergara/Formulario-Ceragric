@@ -9,7 +9,8 @@ function llenarSelect(select, opciones, textoVacio) {
 
 /**
  * Enlaza tres selects en cascada (provincia > cantón > parroquia).
- * Devuelve `establecerParroquia(codigo)` para preseleccionar los tres niveles a partir de una parroquia.
+ * Devuelve `establecerParroquia(codigo)` para preseleccionar los tres niveles a partir de una parroquia
+ * (con `null` deja los tres selects vacíos).
  */
 export async function iniciarSelectorUbicacion({
   selectProvincia,
@@ -39,8 +40,9 @@ export async function iniciarSelectorUbicacion({
 
   return {
     establecerParroquia(codigoParroquia) {
-      selectProvincia.value = codigoParroquia.slice(0, 2);
+      selectProvincia.value = codigoParroquia?.slice(0, 2) ?? '';
       cargarCantones();
+      if (!codigoParroquia) return;
       selectCanton.value = codigoParroquia.slice(0, 4);
       cargarParroquias();
       selectParroquia.value = codigoParroquia;

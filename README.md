@@ -39,6 +39,9 @@ Proyecto Supabase: `Ceragric` (`vmozwtdacmroznlxdkzl`, sa-east-1), migraciones y
   (con confirmación; la eliminación es definitiva).
 - Filtros por cantón, parroquia e inspección (combinables con la búsqueda; la exportación respeta lo filtrado).
 - Casilla "Inspeccionado en campo": la fecha de inspección la asigna la base al marcarla.
+- Pestaña "Registro rápido" (solo administradores): cédula, nombre y teléfono. El registro queda con la etiqueta
+  "Registro rápido · completar datos" y pasa a completo automáticamente cuando se llenan todos los datos desde Editar.
+  El formulario público sigue exigiendo todos los campos.
 - Alta de administrador: crear el usuario en Supabase (Authentication → Users → Add user) y luego
   `insert into ceragric_administradores (ceragric_usuario_id) select id from auth.users where email = '<correo>';`
 

@@ -1,17 +1,35 @@
-import { GENEROS, obtenerEtiqueta } from '../../../../shared/catalogos.js';
+import { GENEROS, TIPO_REGISTRO, obtenerEtiqueta } from '../../../../shared/catalogos.js';
 import { describirParroquia } from '../../../../shared/services/dpa.service.js';
 import { crearCeldaAcciones } from './menu-acciones.js';
 
 const FORMATO_FECHA = new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short' });
 const FORMATO_FECHA_CORTA = new Intl.DateTimeFormat('es-EC', { dateStyle: 'medium' });
 const DURACION_RESALTADO_MS = 4000;
+const SIN_DATO = '—';
 
 export function nombreCompleto(productor) {
   return [
     productor.ceragric_productores_nombres,
     productor.ceragric_productores_apellido_paterno,
     productor.ceragric_productores_apellido_materno,
-  ].join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+export function esRegistroRapido(productor) {
+  return productor.ceragric_productores_tipo_registro === TIPO_REGISTRO.RAPIDO;
+}
+
+function crearCeldaProductor(productor) {
+  const celda = crearCelda(nombreCompleto(productor), 'Productor');
+  if (esRegistroRapido(productor)) {
+    const etiqueta = document.createElement('span');
+    etiqueta.className = 'etiqueta etiqueta--rapido';
+    etiqueta.textContent = 'Registro rápido · completar datos';
+    celda.append(etiqueta);
+  }
+  return celda;
 }
 
 function crearCelda(texto, etiqueta) {
@@ -77,7 +95,7 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
     if (!filtro.coincide(productor)) return false;
     const termino = inputBusqueda.value.trim().toUpperCase();
     if (!termino) return true;
-    return `${productor.ceragric_productores_cedula} ${nombreCompleto(productor)} ${productor.ceragric_productores_recinto}`
+    return `${productor.ceragric_productores_cedula} ${nombreCompleto(productor)} ${productor.ceragric_productores_recinto ?? ''}`
       .toUpperCase()
       .includes(termino);
   };
@@ -89,14 +107,15 @@ export function crearTablaProductores({ cuerpo, inputBusqueda, contador, estadoV
     const fila = document.createElement('tr');
     fila.dataset.id = productor.ceragric_productores_id;
     fila.classList.toggle('fila--inspeccionada', productor.ceragric_productores_inspeccionado);
+    const textoUbicacion = ubicacion.canton ? `${ubicacion.canton} / ${ubicacion.parroquia}` : SIN_DATO;
 
     fila.append(
       crearCelda(productor.ceragric_productores_cedula, 'Cédula'),
-      crearCelda(nombreCompleto(productor), 'Productor'),
-      crearCelda(obtenerEtiqueta(GENEROS, productor.ceragric_productores_genero), 'Género'),
-      crearCelda(`${ubicacion.canton} / ${ubicacion.parroquia}`, 'Cantón / Parroquia'),
-      crearCelda(productor.ceragric_productores_recinto, 'Recinto'),
-      crearCelda(productor.ceragric_productores_telefono ?? '—', 'Teléfono'),
+      crearCeldaProductor(productor),
+      crearCelda(obtenerEtiqueta(GENEROS, productor.ceragric_productores_genero) || SIN_DATO, 'Género'),
+      crearCelda(textoUbicacion, 'Cantón / Parroquia'),
+      crearCelda(productor.ceragric_productores_recinto ?? SIN_DATO, 'Recinto'),
+      crearCelda(productor.ceragric_productores_telefono ?? SIN_DATO, 'Teléfono'),
       crearCelda(FORMATO_FECHA.format(new Date(productor.ceragric_productores_fecha_registro)), 'Registro'),
       crearCeldaInspeccion(productor, acciones.alMarcarInspeccion),
       crearCeldaAcciones(productor, acciones)

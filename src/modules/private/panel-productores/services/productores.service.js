@@ -1,5 +1,6 @@
 import { CONFIG } from '../../../../core/config.js';
 import { obtenerClienteSupabase } from '../../../../core/supabase-cliente.js';
+import { TIPO_REGISTRO } from '../../../../shared/catalogos.js';
 
 const COLUMNA_FECHA_REGISTRO = 'ceragric_productores_fecha_registro';
 const CANAL_TIEMPO_REAL = 'ceragric-productores-panel';
@@ -22,6 +23,25 @@ export async function obtenerProductor(id) {
     .single();
 
   if (error) throw new Error('No se pudo cargar el registro.');
+  return data;
+}
+
+const CODIGO_POSTGRES_VIOLACION_UNICIDAD = '23505';
+
+export async function crearRegistroRapido({ cedula, nombres, telefono }) {
+  const { data, error } = await obtenerClienteSupabase()
+    .from(CONFIG.TABLA_PRODUCTORES)
+    .insert({
+      ceragric_productores_cedula: cedula,
+      ceragric_productores_nombres: nombres,
+      ceragric_productores_telefono: telefono,
+      ceragric_productores_tipo_registro: TIPO_REGISTRO.RAPIDO,
+    })
+    .select()
+    .single();
+
+  if (error?.code === CODIGO_POSTGRES_VIOLACION_UNICIDAD) throw new Error('Esta cédula ya está registrada.');
+  if (error) throw new Error('No se pudo crear el registro rápido.');
   return data;
 }
 

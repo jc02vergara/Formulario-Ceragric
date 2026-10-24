@@ -1,14 +1,16 @@
-import { ESTADOS_CIVILES, GENEROS, NIVELES_ESTUDIO, obtenerEtiqueta } from '../../../../shared/catalogos.js';
+import { ESTADOS_CIVILES, GENEROS, NIVELES_ESTUDIO, TIPO_REGISTRO, obtenerEtiqueta } from '../../../../shared/catalogos.js';
 import { describirParroquia } from '../../../../shared/services/dpa.service.js';
 import { descargarXlsx } from './xlsx.js';
 
 const ENCABEZADOS = [
   'Cédula', 'Nombres', 'Apellido paterno', 'Apellido materno', 'Género', 'Fecha de nacimiento',
   'Estado civil', 'Nivel de estudio', 'Provincia', 'Cantón', 'Parroquia', 'Recinto', 'Teléfono',
-  'Latitud', 'Longitud', 'Inspeccionado', 'Fecha de inspección', 'Fecha de registro', 'Última actualización',
+  'Latitud', 'Longitud', 'Tipo de registro', 'Inspeccionado', 'Fecha de inspección', 'Fecha de registro', 'Última actualización',
 ];
 
 const FORMATO_FECHA_HORA = new Intl.DateTimeFormat('es-EC', { dateStyle: 'short', timeStyle: 'short' });
+
+const aNumero = (valor) => (valor === null || valor === undefined ? '' : Number(valor));
 
 function formatearFechaHora(valor) {
   return valor ? FORMATO_FECHA_HORA.format(new Date(valor)) : '';
@@ -22,16 +24,17 @@ async function construirFila(productor) {
     productor.ceragric_productores_apellido_paterno,
     productor.ceragric_productores_apellido_materno,
     obtenerEtiqueta(GENEROS, productor.ceragric_productores_genero),
-    productor.ceragric_productores_fecha_nacimiento,
+    productor.ceragric_productores_fecha_nacimiento ?? '',
     obtenerEtiqueta(ESTADOS_CIVILES, productor.ceragric_productores_estado_civil),
     obtenerEtiqueta(NIVELES_ESTUDIO, productor.ceragric_productores_nivel_estudio),
     ubicacion.provincia,
     ubicacion.canton,
     ubicacion.parroquia,
-    productor.ceragric_productores_recinto,
+    productor.ceragric_productores_recinto ?? '',
     productor.ceragric_productores_telefono ?? '',
-    Number(productor.ceragric_productores_latitud),
-    Number(productor.ceragric_productores_longitud),
+    aNumero(productor.ceragric_productores_latitud),
+    aNumero(productor.ceragric_productores_longitud),
+    productor.ceragric_productores_tipo_registro === TIPO_REGISTRO.RAPIDO ? 'Registro rápido' : 'Completo',
     productor.ceragric_productores_inspeccionado ? 'Sí' : 'No',
     formatearFechaHora(productor.ceragric_productores_fecha_inspeccion),
     formatearFechaHora(productor.ceragric_productores_fecha_registro),

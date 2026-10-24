@@ -24,3 +24,5 @@ export const NIVELES_ESTUDIO = Object.freeze([
 export function obtenerEtiqueta(catalogo, valor) {
   return catalogo.find((item) => item.valor === valor)?.etiqueta ?? '';
 }
+
+export const TIPO_REGISTRO = Object.freeze({ COMPLETO: 0, RAPIDO: 1 });

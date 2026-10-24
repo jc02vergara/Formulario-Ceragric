@@ -309,3 +309,33 @@ input:user-invalid, select:user-invalid { border-color: var(--color-error); }
 .casilla__fecha { font-size: 0.82rem; color: var(--color-texto-suave); white-space: nowrap; }
 .fila--inspeccionada td:first-child { box-shadow: inset 3px 0 0 var(--color-primario); }
 .fila--inspeccionada .casilla__fecha { color: var(--color-primario-oscuro); font-weight: 600; }
+
+/* ============ Pestañas y registro rápido ============ */
+.pestanas { display: flex; gap: 4px; margin-bottom: 12px; }
+.pestanas__item {
+  font: inherit;
+  font-weight: 600;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 8px 8px 0 0;
+  background: rgb(255 255 255 / 0.18);
+  color: #fff;
+  cursor: pointer;
+}
+.pestanas__item[aria-selected='true'] { background: var(--color-superficie); color: var(--color-primario-oscuro); }
+
+.ayuda--bloque { display: block; margin: -6px 0 16px; font-size: 0.9rem; }
+
+.etiqueta {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.etiqueta--rapido { background: #fff1d6; color: #8a5300; }
+
+.mensaje--aviso { background: #fff1d6; color: #8a5300; font-weight: 500; box-shadow: none; }

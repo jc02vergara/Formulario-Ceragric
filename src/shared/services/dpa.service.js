@@ -18,6 +18,7 @@ export function buscarHijos(lista, codigo) {
  * Devuelve los nombres legibles de provincia, cantón y parroquia a partir del código de parroquia (6 dígitos).
  */
 export async function describirParroquia(codigoParroquia) {
+  if (!codigoParroquia) return { provincia: '', canton: '', parroquia: '' };
   const provincias = await cargarProvincias();
   const provincia = provincias.find(([codigo]) => codigo === codigoParroquia.slice(0, 2));
   const canton = provincia?.[2].find(([codigo]) => codigo === codigoParroquia.slice(0, 4));
