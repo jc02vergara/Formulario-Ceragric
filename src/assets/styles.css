@@ -311,18 +311,29 @@ input:user-invalid, select:user-invalid { border-color: var(--color-error); }
 .fila--inspeccionada .casilla__fecha { color: var(--color-primario-oscuro); font-weight: 600; }
 
 /* ============ Pestañas y registro rápido ============ */
-.pestanas { display: flex; gap: 4px; margin-bottom: 12px; }
+/* Control segmentado: separado de la tarjeta para que el contenido no quede pegado a la pestaña activa. */
+.pestanas {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 20px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+}
 .pestanas__item {
   font: inherit;
   font-weight: 600;
-  padding: 10px 18px;
+  padding: 10px 20px;
   border: 0;
-  border-radius: 8px 8px 0 0;
-  background: rgb(255 255 255 / 0.18);
-  color: #fff;
+  border-radius: 8px;
+  background: none;
+  color: var(--color-texto-suave);
   cursor: pointer;
 }
-.pestanas__item[aria-selected='true'] { background: var(--color-superficie); color: var(--color-primario-oscuro); }
+.pestanas__item:hover { color: var(--color-primario-oscuro); background: var(--color-acento); }
+.pestanas__item[aria-selected='true'] { background: var(--color-primario); color: #fff; }
 
 .ayuda--bloque { display: block; margin: -6px 0 16px; font-size: 0.9rem; }
 
